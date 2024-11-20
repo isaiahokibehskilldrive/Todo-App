@@ -26,7 +26,7 @@ const TaskForm = ({ onSubmit, initialTitle = "", initialDueDate = "" }: TaskForm
     <Form onSubmit={handleSubmit}>
       <Input
         type="text"
-        placeholder="Add a task..."
+        placeholder="Add a task here..."
         value={title}
         onChange={(e) => setTitle(e.target.value)}
        
@@ -40,7 +40,7 @@ const TaskForm = ({ onSubmit, initialTitle = "", initialDueDate = "" }: TaskForm
        
       />
       </label>
-      <Button type="submit">Save</Button>
+      <Button type="submit">Add Task</Button>
     </Form>
   );
 };
