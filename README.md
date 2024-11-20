@@ -6,7 +6,7 @@ A simple and intuitive To-Do application built with [Next.js](https://nextjs.org
 ## Features
 
 - Add tasks to your to-do list.
-- Mark tasks as completed.
+- Mark tasks as completed or in-progress.
 - Edit tasks.
 - Delete tasks from the list.
 - Persistent data with local storage 
