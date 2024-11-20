@@ -1,5 +1,5 @@
 
-# To-Do App
+# To-Do list App
 
 A simple and intuitive To-Do application built with [Next.js](https://nextjs.org/) to manage tasks efficiently. This app allows users to add, edit, mark tasks as completed, and delete tasks. It also stores the tasks in local storage, so the list persists even after the browser is closed.
 
