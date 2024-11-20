@@ -62,7 +62,7 @@ const Home = () => {
     <>
       <GlobalStyles /> {/* Apply global styles here */}
       <Container>
-        <Header>Todo App</Header>
+        <Header>Todo List App</Header>
         <TaskForm onSubmit={handleAddTask} />
         <TaskList>
           {enhancedTasks.map((task, index) => (
