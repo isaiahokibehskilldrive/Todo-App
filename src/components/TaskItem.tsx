@@ -248,7 +248,7 @@ const SubtaskList = styled.div`
 const SubtaskItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
 `;
 
 const SubtaskTitle = styled.div<{ $completed: boolean }>`
