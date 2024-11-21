@@ -107,7 +107,7 @@ const TaskItem = ({
             <ActionButton onClick={() => setIsEditing(true)}>✏️ Edit</ActionButton>
             <ActionButton
               onClick={() => {
-                if (window.confirm("Are you sure you want to delete this task?")) {
+                if (window.confirm("Please Are you sure you want to delete this task?")) {
                   onDelete();
                 }
               }}
