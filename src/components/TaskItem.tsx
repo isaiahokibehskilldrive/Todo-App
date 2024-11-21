@@ -1,16 +1,18 @@
 "use client";
+
+import { useState } from "react";
 import styled from "styled-components";
 import { Task, SubTask } from "../store/taskStore";
 
 interface TaskItemProps {
   task: Task;
-  taskNumber: number; // Add task number as a prop
+  taskNumber: number;
   isOverdue?: boolean;
   onStartTask: () => void;
   onEndTask: () => void;
   onToggleComplete: () => void;
   onDelete: () => void;
-  onEdit: () => void;
+  onEdit: (updatedTask: { title: string; dueDate?: string | null }) => void;
   onAddSubtask: (subtask: SubTask) => void;
   onToggleSubtask: (subtaskId: string) => void;
 }
@@ -21,43 +23,99 @@ const TaskItem = ({
   isOverdue = false,
   onStartTask,
   onEndTask,
-  onToggleComplete,
   onDelete,
   onEdit,
   onAddSubtask,
   onToggleSubtask,
 }: TaskItemProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(task.title);
+  const [editedDueDate, setEditedDueDate] = useState(
+    task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : ""
+  );
+
+  const handleSave = () => {
+    if (!editedTitle.trim()) {
+      alert("Task title cannot be empty.");
+      return;
+    }
+  
+    // Log values to ensure they are updated correctly
+    console.log("Attempting to save changes:");
+    console.log("Edited Title:", editedTitle);
+    console.log("Edited Due Date:", editedDueDate);
+  
+    onEdit({ title: editedTitle, dueDate: editedDueDate || null });
+  
+    setIsEditing(false); // Close the edit mode
+  };
+  
   return (
     <TaskContainer $isOverdue={isOverdue}>
       <TaskInfo>
-        <TaskNumber>{taskNumber}.</TaskNumber> {/* Display task number */}
-        <TaskTitle $completed={task.completed}>{task.title}</TaskTitle>
+        <TaskNumber>{taskNumber}.</TaskNumber>
+
+        {isEditing ? (
+          <>
+            <EditInput
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+              placeholder="Edit title"
+            />
+            <EditInput
+              type="date"
+              value={editedDueDate}
+              onChange={(e) => setEditedDueDate(e.target.value)}
+            />
+          </>
+        ) : (
+          <>
+            <TaskTitle $completed={task.completed}>{task.title}</TaskTitle>
+            {task.dueDate && (
+              <DueDate $isOverdue={isOverdue}>
+                Due: {new Date(task.dueDate).toLocaleDateString()}
+              </DueDate>
+            )}
+          </>
+        )}
         {isOverdue && <OverdueLabel>Overdue</OverdueLabel>}
       </TaskInfo>
 
       <StatusControls>
         <CheckboxLabel>
-          <Checkbox
-            $completed={task.inProgress}
-            onClick={onStartTask}
-          />
+          <Checkbox $completed={task.inProgress} onClick={onStartTask} />
           Start Task
         </CheckboxLabel>
         {task.inProgress && <StatusText>In Progress</StatusText>}
 
         <CheckboxLabel>
-          <Checkbox
-            $completed={task.completed}
-            onClick={onEndTask}
-          />
+          <Checkbox $completed={task.completed} onClick={onEndTask} />
           End Task
         </CheckboxLabel>
         {task.completed && <StatusText>Completed Task Successfully!</StatusText>}
       </StatusControls>
 
       <Actions>
-        <ActionButton onClick={onEdit}>✏️</ActionButton>
-        <ActionButton onClick={onDelete}>🗑️</ActionButton>
+        {isEditing ? (
+          <>
+            <ActionButton onClick={handleSave}>💾 Save</ActionButton>
+            <ActionButton onClick={() => setIsEditing(false)}>❌ Cancel</ActionButton>
+          </>
+        ) : (
+          <>
+            <ActionButton onClick={() => setIsEditing(true)}>✏️ Edit</ActionButton>
+            <ActionButton
+              onClick={() => {
+                if (window.confirm("Are you sure you want to delete this task?")) {
+                  onDelete();
+                }
+              }}
+            >
+              🗑️ Delete
+            </ActionButton>
+          </>
+        )}
         <ActionButton
           onClick={() => {
             const subtaskTitle = prompt("Enter Subtask Title:");
@@ -70,7 +128,7 @@ const TaskItem = ({
             }
           }}
         >
-          ➕
+          ➕ Add Subtask
         </ActionButton>
       </Actions>
 
@@ -127,6 +185,11 @@ const TaskTitle = styled.div<{ $completed: boolean }>`
   text-decoration: ${({ $completed }) => ($completed ? "line-through" : "none")};
 `;
 
+const DueDate = styled.div<{ $isOverdue?: boolean }>`
+  font-size: 14px;
+  color: ${({ $isOverdue }) => ($isOverdue ? "red" : "#666")};
+`;
+
 const OverdueLabel = styled.div`
   color: red;
   font-weight: bold;
@@ -170,6 +233,13 @@ const ActionButton = styled.button`
   }
 `;
 
+const EditInput = styled.input`
+  font-size: 16px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
 const SubtaskList = styled.div`
   margin-top: 8px;
   padding-left: 16px;
@@ -187,7 +257,6 @@ const SubtaskTitle = styled.div<{ $completed: boolean }>`
   text-decoration: ${({ $completed }) => ($completed ? "line-through" : "none")};
 `;
 
-/* Checkbox styled component */
 const Checkbox = styled.div<{ $completed: boolean }>`
   width: 20px;
   height: 20px;

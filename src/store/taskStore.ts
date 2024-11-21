@@ -5,6 +5,7 @@ export interface SubTask {
   title: string;
   completed: boolean;
 }
+
 export interface Task {
   id: string;
   title: string;
@@ -14,7 +15,6 @@ export interface Task {
   subtasks: SubTask[];
 }
 
-
 interface TaskStore {
   tasks: Task[];
   addTask: (task: Task) => void;
@@ -23,9 +23,10 @@ interface TaskStore {
   deleteTask: (id: string) => void;
   addSubtask: (taskId: string, subtask: SubTask) => void;
   toggleSubtask: (taskId: string, subtaskId: string) => void;
-  startTask: (id: string) => void; // New: Start a task
-  endTask: (id: string) => void; // New: End a task
-  getOverdueTasks: () => Task[]; // Optional: Retrieve overdue tasks
+  startTask: (id: string) => void;
+  endTask: (id: string) => void;
+  editDueDate: (id: string, dueDate: string | null) => void; // New: Edit due date
+  getOverdueTasks: () => Task[];
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -83,7 +84,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       ),
     })),
 
-  // New: Start a task
   startTask: (id) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
@@ -93,7 +93,6 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       ),
     })),
 
-  // New: End a task
   endTask: (id) =>
     set((state) => ({
       tasks: state.tasks.map((task) =>
@@ -102,8 +101,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
           : task
       ),
     })),
+    editDueDate: (id, dueDate) =>
+      set((state) => ({
+        tasks: state.tasks.map((task) =>
+          task.id === id ? { ...task, dueDate } : task
+        ),
+      })),
+    
 
-  // Optional: Get overdue tasks
   getOverdueTasks: () => {
     const now = new Date();
     return get().tasks.filter(

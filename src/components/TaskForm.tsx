@@ -15,12 +15,14 @@ const TaskForm = ({ onSubmit, initialTitle = "", initialDueDate = "" }: TaskForm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting Task:", title.trim(), dueDate);
     if (title.trim()) {
       onSubmit(title.trim(), dueDate || undefined);
       setTitle("");
       setDueDate("");
     }
   };
+  
 
   return (
     <Form onSubmit={handleSubmit}>
