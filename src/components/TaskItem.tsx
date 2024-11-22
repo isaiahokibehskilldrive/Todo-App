@@ -39,19 +39,17 @@ const TaskItem = ({
       alert("Task title cannot be empty.");
       return;
     }
-  
-    // Log values to ensure they are updated correctly
-    console.log("Attempting to save changes:");
-    console.log("Edited Title:", editedTitle);
-    console.log("Edited Due Date:", editedDueDate);
-  
+
     onEdit({ title: editedTitle, dueDate: editedDueDate || null });
-  
-    setIsEditing(false); // Close the edit mode
+    setIsEditing(false);
   };
-  
+
+  const isCurrentlyOverdue = editedDueDate
+    ? new Date(editedDueDate) < new Date()
+    : false;
+
   return (
-    <TaskContainer $isOverdue={isOverdue}>
+    <TaskContainer $isOverdue={isCurrentlyOverdue}>
       <TaskInfo>
         <TaskNumber>{taskNumber}.</TaskNumber>
 
@@ -66,20 +64,24 @@ const TaskItem = ({
             <EditInput
               type="date"
               value={editedDueDate}
-              onChange={(e) => setEditedDueDate(e.target.value)}
+              onChange={(e) => {
+                const date = e.target.valueAsDate;
+                const formattedDate = date ? date.toISOString().split("T")[0] : "";
+                setEditedDueDate(formattedDate);
+              }}
             />
           </>
         ) : (
           <>
             <TaskTitle $completed={task.completed}>{task.title}</TaskTitle>
             {task.dueDate && (
-              <DueDate $isOverdue={isOverdue}>
-                Due: {new Date(task.dueDate).toLocaleDateString()}
+              <DueDate $isOverdue={isCurrentlyOverdue}>
+                Due: {editedDueDate}
               </DueDate>
             )}
           </>
         )}
-        {isOverdue && <OverdueLabel>Overdue</OverdueLabel>}
+        {isCurrentlyOverdue && <OverdueLabel>Overdue</OverdueLabel>}
       </TaskInfo>
 
       <StatusControls>
@@ -107,7 +109,7 @@ const TaskItem = ({
             <ActionButton onClick={() => setIsEditing(true)}>✏️ Edit</ActionButton>
             <ActionButton
               onClick={() => {
-                if (window.confirm("Please Are you sure you want to delete this task?")) {
+                if (window.confirm("Are you sure you want to delete this task?")) {
                   onDelete();
                 }
               }}
@@ -185,7 +187,7 @@ const TaskTitle = styled.div<{ $completed: boolean }>`
   text-decoration: ${({ $completed }) => ($completed ? "line-through" : "none")};
 `;
 
-const DueDate = styled.div<{ $isOverdue?: boolean }>`
+const DueDate = styled.div<{ $isOverdue: boolean }>`
   font-size: 14px;
   color: ${({ $isOverdue }) => ($isOverdue ? "red" : "#666")};
 `;

@@ -53,11 +53,11 @@ const Home = () => {
       title,
       completed: false,
       inProgress: false,
-      dueDate: dueDate || null,
+      dueDate: dueDate || "",  // Use an empty string as the default
       subtasks: [],
     });
   };
-
+  
   return (
     <>
       <GlobalStyles /> {/* Apply global styles here */}
